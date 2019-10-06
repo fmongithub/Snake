@@ -793,11 +793,11 @@ void intro(char campo[ALT][LARG], const char scritta[ALT_SCRITTA][25])
 
     GoToXY(18, 16);
 
-    printf("\tpremere spazio per mettere in pausa...");
+    printf("\tpress the spacebar for pause the game...");
 
     GoToXY(18, 18);
 
-    printf("PREMERE UN TASTO QUALSIASI PER CONTINUARE...");
+    printf("PRESS EVERY KEY FOR START...");
 
     i = getch();													// wait an input
 }
@@ -816,7 +816,7 @@ void podio(Snake *snake)
 
     if(fp == NULL)                                          // if the file doesn't exist print an error message */
     {
-        printf("errore: il file non si può aprire.\n");
+        printf("error: the file can't opened.\n");
 
     }
     else                                                    // otherwise update the rnaking file if necessary
