@@ -1,4 +1,4 @@
-/* PROGETTO ESAME DI PROGRAMMAZIONE */
+/* PROGRAMMING EXAM PROJECT */
 
 #include <stdio.h>
 #include <time.h>
@@ -7,68 +7,69 @@
 #include <stdlib.h>
 #include <conio.h>
 
-#define ALT 20					/* altezza del campo */
-#define LARG 70					/* larghezza del campo */
+#define ALT 20					/* land height */
+#define LARG 70					/* land width */
 
-#define B_V (char)186			/* carattere per il bordo verticale */
-#define B_O (char)205			/* carattere per il bordo orizzontale */
-#define z 	(char)219			/* carattere per le scritte */
-#define A_S (char)201			/* carattere per l'angolo in alto a sinistra */
-#define A_D (char)187			/* carattere per l'angolo in alto a destra */
-#define B_S (char)200			/* carattere per il bordo sinistro */
-#define B_D (char)188			/* carattere per il bordo destro */
+#define B_V (char)186			/* charachter for the vertical boarder */
+#define B_O (char)205			/* charachter for the orizzontal boarder */
+#define z 	(char)219			/* charachter for the writings */
+#define A_S (char)201			/* charachter for the angle on the top-left */
+#define A_D (char)187			/* charachter for the angle on the top-right */
+#define B_S (char)200			/* charachter for the angle on the bottom-left */
+#define B_D (char)188			/* charachter for the angle on the bottom-right */
 
-#define SNAKE_PIXEL (char)219         /* carattere per il corpo dello snake */
-#define SNAKE_HEAD (char)177          /* carattere per la testa dello snake */
-#define ESC 0xE0			  		/* valore esadecimale di escape che ritornato dalla funzione _getch() garantisce che è stata premuta una freccia nella tastiera */
+#define SNAKE_PIXEL (char)219         /* character for the snake body */
+#define SNAKE_HEAD (char)177          /* character for the snake head */
+#define ESC 0xE0			  		/* hexadecimal value that, if returned from the _getch() [windows.h] guarantees that an arrow key it's been pressed */
 
-#define FRUIT (char)111               /* carattere per rappresentare la frutta */
-#define BONUS_FRUIT (char)169         /* carattere per rappresentare la frutta bonus */
+#define FRUIT (char)111               /* character for the fruit */
+#define BONUS_FRUIT (char)169         /* character for the bonus fruit */
 
-#define ALT_SCRITTA 5               /* altezza delle scritte */
+#define ALT_SCRITTA 5               /* writings height */
 
-#define CLASSIFICA "classifica.txt"     /* nome del file testuale contenente i valori della classifica di gioco */
+#define CLASSIFICA "classifica.txt"     /* path for the ranking file */
 
 
-typedef struct           		/* struttura contenente nomi e punteggi dei migliori 3 */
+typedef struct           		/* structure within the name and scores of the first 3 ranking players */
 {
     char name_player[4];
     char name1[4], name2[4], name3[4];
     int score1, score2, score3;
 }Classifica;
 
-typedef struct					/* struttura contenente le variabili contatore della frutta bonus(bon_count) e flag booleano per la presenza o meno della frutta bonus nel campo */
+typedef struct					/* structure containing the bonus fruit counter variable (bon_count) and boolean flag for the presence or absence of bonus fruit in the land. 	*
+								 *	[Every ten fruits eaten, if there isn't a previously generated bonus fruit on the land, a bonus fruit will be generated.] 					*/
 {
 	bool bon;
 	int bon_count;
 }Fruit;
 
-typedef struct					/* struttura contenente la variabile cmd (nella quale si porrà il comando in input) ed i 4 flag booleani per tenere memoria della direzione dello snake */
+typedef struct					/* structure containing the variable cmd (in which the input command will be placed, [arrow key]) and the 4 Boolean flags to keep memory of the direction of the snake */
 {
 	char cmd;
 	bool up, down, left, right;
 }Command;
 
-typedef struct					/* struttura contenente la lunghezza dello snake ed un vettore flessibile(allocato a run-time) di puntatori a carattere (al corpo delllo snake) */
+typedef struct					/* structure containing the length of the snake and a flexible vector (allocated at run-time) of pointers to character (to the body of the snake) */
 {
 	int len_snake;
-    int score;          		/* punteggio */
-    bool dead;         			/* variabile booleana per asserire la morte dello snake */
+    int score;          		/* score */
+    bool dead;         			/* boolean variable for the assertion of the snake's dead */
 	char *p[];
 }Snake;
 
-typedef struct					/* struttura contenente le variabili relative al tempo trascorso durante la partita */
+typedef struct					/* structure containging the variables relative to the time passed in the game(usefull for framing the game) */
 {
-	long count1, count2;				/* contatori per i secondi */
-	float vel, vel1, vel2;				/* distanze temporali tra la stampa di una schermata ed un'altra */
+	long count1, count2;				/* counter for the seconds */
+	float vel, vel1, vel2;				/* temporal distances between the printing of one screen and another[for different rate of the snake] */
 	long sec;
-	float last_time;					/* variabile contenente il valore(espresso in secondi) da raggiungere affinche si possa stampare una nuova schermata */
+	float last_time;					/* variable containing the value (expressed in seconds) to be reached so that a new screen can be printed */
 	clock_t start_clock, current_time;
 	float diff;
 }Timer;
 
 
-/* prototipi delle varie funzioni */
+/* function prototypes */
 
 void pause(Timer *timer);
 
@@ -113,7 +114,7 @@ void stampa_classifica(int position, Classifica *classifica);
 int main(int argc, char *argv[])
 {
 
-	/* vettori bidimensionali per le scritte di intro e fine gioco */
+	/* two-dimensional arrays for initial and final writings */
 
 	const char scritta[5][25] = 	{{z, z, z, z, ' ', z, ' ', ' ', z, ' ', z, z, z, z, ' ', z, ' ', ' ', z, ' ', z, z, z, z, '\0'},
                                     {z, ' ', ' ', ' ', ' ', z, z, ' ', z, ' ', z, ' ', ' ', z, ' ', z, ' ', z, ' ', ' ', z, '\0'},
@@ -128,7 +129,7 @@ int main(int argc, char *argv[])
                                     {z, ' ', ' ', ' ', z, ' ', z, ' ', ' ', ' ', z, ' ', z, ' ', ' ', ' ', z, ' ', z, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', z, ' ', ' ', ' ', z, ' ', ' ', z, ' ', z, ' ', ' ', z, ' ', ' ', ' ', ' ', ' ', z, ' ', ' ', ' ', z, '\0'},
                                     {z, z, z, z, z, ' ', z, ' ', ' ', ' ', z, ' ', z, ' ', ' ', ' ', z, ' ', z, z, z, z, z, z, ' ', ' ', ' ', z, z, z, z, z, ' ', ' ', ' ', z, ' ', ' ', ' ', z, z, z, z, z, ' ', z, ' ', ' ', ' ', z, '\0'}};
 
-    /* vettore bidimensionale su cui si basa l'intera partita e su cui si faranno tutte le operazioni */
+    /* two-dimensional vector on which the whole lot is based and on which all the operations will be done */
 
 	char campo[ALT][LARG] = {{A_S, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, A_D, '\0'},
 				{B_V, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', B_V, '\0'},
@@ -152,63 +153,59 @@ int main(int argc, char *argv[])
 				{B_S, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_O, B_D, '\0'}};
 
 
-	int i;  /* indice dei cicli */
+	int i;  /* cicle index */
 
     /**********************************************
-    * struttura relativa alla frutta e ai comandi *
+    * structure relative to the fruit			  *
     **********************************************/
 
 	Fruit fruit = {.bon = 0, .bon_count = 0};
 
 	/********************************************
-	* struttura relativa ai comandi in input	*
+	* structure relative to the commands		*
 	********************************************/
 
-	Command command = { .cmd = 'd', .up = 0, .down = 0, .left = 0, .right = 1};		/* inizializza la struttura con il comando ed i flag per il movimento verso destra */
+	Command command = { .cmd = 'd', .up = 0, .down = 0, .left = 0, .right = 1};		/* initialization of the command structure within the right direction of the snake */
 
-    /********************************
-    * struttura relativa allo snake *
-    ********************************/
+    /**********************************
+    * structure relative to the snake *
+    **********************************/
 
-	Snake *snake = malloc(sizeof(Snake) + (4 * sizeof(char *)));       /* puntatore alla struttura di tipo Snake la cui dimensione è allocata dinamicamente a run_time */
+	Snake *snake = malloc(sizeof(Snake) + (4 * sizeof(char *)));       /* first dynamic allocation for the snake structure */
 
-	snake->len_snake = 3;												/* inizializzazione della struttura snake */
+	snake->len_snake = 3;												/* initialization with the starting snake parameters */
 	snake->score = 0;
 	snake->dead = 0;
 
     snake->p[0] = &campo[10][19];
   	snake->p[1] = &campo[10][18];
     snake->p[2] = &campo[10][17];
-    snake->p[3] = &campo[10][16];        								/* inizializza il vettore di puntatori al corpo dello snake */
+    snake->p[3] = &campo[10][16];        								/* initialization of the pointer vector with the right addresses of the land array */
 
     /********************************************************************
-    * struttura relativa al timer di gioco ed alle velocità dello snake *
+    * structure relative to the timer and the rates o fthe snake		*
     ********************************************************************/
 
 	Timer timer = {.vel = 0.066f, .vel1 = 0.066f, .vel2 = 2 * (0.066f), .last_time = 0.0f};
 
 
-    /****************************************************************************************
-    * fine della parte dichiarativa del programma ed inizio della parte di inizializzazione *
-	****************************************************************************************/
-
 	ShowConsoleCursor(false);
 
-    srand((unsigned)time(NULL));		/* inizializzatore random per la posizione della frutta */
+    srand((unsigned)time(NULL));		/* initialization with a random seed */
 
-    intro(campo, scritta);      		/* entrata nel menu di gioco */
+    intro(campo, scritta);      		/* game intro */
 
-    time_t *tmppointer = NULL;                          /* inizializzazione delle vaiabili temporali */
+    time_t *tmppointer = NULL;                          /* initialization of the temporal variables of the timer structure */
     timer.count2 = timer.count1 = time(tmppointer);
 
-    random_fruit(&campo[0][0]);       		/* pone il primo frutto frutto in posizione random sullo schermo */
+    random_fruit(&campo[0][0]);       		/* places the first fruit on the land */
 
-	timer.start_clock = clock();			/* inizializza la variabile start_clock con il valore in secondi della differenza tra l'attimo in cui il programma è stato lanciato e questo istante */
+	timer.start_clock = clock();			/* initialize the start_clock variable with the value in seconds of the difference between the moment the program was launched and this instant */
 
 
     /******************************************************************************
-    * ciclo principale del gioco dal quale si esce solamente perdendo o arrivando *
-    * ad avere la lunghezza massima dello snake, asserendo la variabile dead.     *
+    * main cicle of the game where you can exit only by losing or by reaching the *
+    * max snake lenght														      *
     ******************************************************************************/
 
     while(snake->dead == 0)
@@ -216,13 +213,13 @@ int main(int argc, char *argv[])
 
 		timer_update(&timer);
 
-		if(timer.diff - timer.last_time >= timer.vel)                  // se il frame presente nella console ha avuto una vita superiore a 0,066 s
-		{                                           				   // stampa il nuovo frame aggiornando i secondi e la variabile lasttime aagiungendogli 0,066.
+		if(timer.diff - timer.last_time >= timer.vel)                  // if the frame in the console has had a life of more than 0.066 s it prints the new frame updating the seconds and the last time variable by adding 0.066
+		{                                           				   
 			timer_update2(&timer);
 
 			fflush(stdout);
 
-			GoToXY(0, 0);       		/* posiziona il cursore nell'angolo in alto a sinistra della console e ristampa la schermata nuova */
+			GoToXY(0, 0);       		/* place the cursor in the top-left angle for print later a screen */
 
 			printf("\n\t\t\ttime: %5d\t\tscore: %d\n\n", timer.sec, snake->score);
 
@@ -231,39 +228,39 @@ int main(int argc, char *argv[])
 				printf("\t%s\n", campo[i]);
 			}
 
-			if(kbhit() == 0)        // se non viene premuto alcun tasto non fare nulla
-			{                       // altrimenti prendi come comando il carattere premuto.
+			if(kbhit() == 0)        // if no key is pressed do nothing otherwise take the pressed character as a command.
+			{                       
 				;
 			}
 			else
 			{
-				arrow_controller(&command, &timer);		  /* prende in input solamente i caratteri dei tasti freccia oppure ' ' per mettere in pausa */
-                input_controller(&command);       		 /* previene il cambio di direzione in direzione opposta a quella in cui si sta andando */
+				arrow_controller(&command, &timer);		  /* take in input only the arrow keys, or the ' ' for pause the game */
+                input_controller(&command);       		 /* prevent to change the snake directin in the opposite of the actual direction */
             }
 
 
 			/*****************************************
-			* switch per gestire il comando in input *
+			* switch for handling the command input  *
 			*****************************************/
 
 			switch(command.cmd)
 			{
 				case 'a':
                 {
-                    timer.vel = timer.vel1;                 /* adatta la velocità al movimento orizzontale */
+                    timer.vel = timer.vel1;                 /* adapts the rate of the snake for the orizzontal movement */
                     command.up = 0;
                     command.down = 0;
 
-                    if(*(snake->p[0] - 1) == ' ')			// se nella posizione in cui sta andando la testa c'è un carattere ' '
-                    {										// aggiorna il flag di direzoine e sposta lo snake
+                    if(*(snake->p[0] - 1) == ' ')			// if in the position there is the ' ' character
+                    {										// refresh the direction flag and move the snake
                         command.left = 1;
                         move_left(snake);
                         break;
                     }
                     else
                     {
-                        if(*(snake->p[0] - 1) == FRUIT)									// se nella posizione in cui sta andando la testa c'è un carattere FRUIT
-                        {																// aggiorna il flag di direzoine, mangia la frutta e sposta lo snake
+                        if(*(snake->p[0] - 1) == FRUIT)									// if in the position there is the FRUIT character
+                        {																// refresh the direction flag and move the snake
                             command.left = 1;
                             eat_fruit(&fruit, snake, &campo[0][0]);
                             move_left(snake);
@@ -272,7 +269,7 @@ int main(int argc, char *argv[])
                         else
                         {
                             if(*(snake->p[0] - 1) == BONUS_FRUIT)						// se nella posizione in cui sta andando la testa c'è un carattere BONUS_FRUIT
-                            {															// aggiorna il flag di direzoine, mangia la frutta bonus e sposta lo snake
+                            {															// refresh the direction flag, eat the bonus fruit and move the snake
                                 command.left = 1;
                                 eat_bonus_fruit(&fruit, snake);
                                 move_left(snake);
@@ -281,12 +278,12 @@ int main(int argc, char *argv[])
                         }
                     }
 
-                    snake->dead = 1;			/*se nessuna delle istanze precedenti è stata verificata allora lo snake è andato contro un bordo oppure si è morso da solo */
+                    snake->dead = 1;			/* if none of the previously instances has been verified the snake crashed into the border or he bited itself */
                     break;
                 }
                 case 'd':
                 {
-                    timer.vel = timer.vel1;             /* adatta la velocità al movimento orizzontale */
+                    timer.vel = timer.vel1;             /* adapts the snake rate to the orizzontal movement */
                     command.up = 0;
                     command.down = 0;
 
@@ -322,7 +319,7 @@ int main(int argc, char *argv[])
                 }
 				case 'w':
                 {
-                    timer.vel = timer.vel2;             /* adatta la velocità ad un movimento verticale */
+                    timer.vel = timer.vel2;             /* adapts the snake rate to the vertical movement */
                     command.left = 0;
                     command.right = 0;
 
@@ -358,7 +355,7 @@ int main(int argc, char *argv[])
                 }
 				case 's':
                 {
-                    timer.vel = timer.vel2;                 /* adatta la velocità ad un movimento verticale */
+                    timer.vel = timer.vel2;                 /* adapts the snake rate to the vertical movement */
                     command.left = 0;
                     command.right = 0;
 
@@ -404,7 +401,7 @@ int main(int argc, char *argv[])
         }	/* endif */
     }   /* while end */
 
-    GoToXY(0, 0);						/* posiziona il cursore in alto a destra e stampa la schermata di fine gioco con la classifica(nel caso il punteggio risulti tra i primi tre) */
+    GoToXY(0, 0);						/* place the cursor at the top left and print the game end screen with the ranking (if the score is in the top three) */
 
     game_over(campo, scritta2);
 
@@ -412,44 +409,43 @@ int main(int argc, char *argv[])
 
     GoToXY(0, 25);
 
-    i = _getch();					/* attende un input qualsiasi prima di terminare il programma */
+    i = _getch();					/* wait for the last key pressed to terminate the game */
 
     return 0;
 }               /* end of main */
 
 
-/******************************************************
-* funzioni per l'aggiornamento delle variabili tempo  *
-* nella struttura timer e per mettere in pausa		  *
-******************************************************/
+/*******************************************************
+* function for the update of the timer and for pause   *
+* the game											   *
+*******************************************************/
 void pause(Timer *timer)
 {
-	while(kbhit() == 0 || _getch() != ESC)		/* finche non viene premuto alcun tasto non fa nulla */
+	while(kbhit() == 0 || _getch() != ESC)		/* while no key is pressed do nothing */
 	{
 		;
 	}
 
-	timer_update(timer);				/* aggiorna le variabili temporali */
+	timer_update(timer);				/* refresh the temporal variables */
 	timer->last_time = timer->diff;
 }
 
 void timer_update(Timer *timer)
 {
-	timer->current_time = clock();																		// aggiorna current_time con il tempo trascorso dall'inizio del programma a questo punto
-	timer->diff = ((timer->current_time - timer->start_clock) / (float)(CLOCKS_PER_SEC));				// aagiorna diff con il tempo effetivamente trascorso dall'inizio della partita(espresso in secondi)
+	timer->current_time = clock();																		// update current_time with the time passed since the beginning of the program to this timme
+	timer->diff = ((timer->current_time - timer->start_clock) / (float)(CLOCKS_PER_SEC));				// update diff with the actual time elapsed since the start of the game (expressed in seconds)
 }
 
 void timer_update2(Timer *timer)
 {
 	static time_t *tmppointer;
-	timer->count1 = time(tmppointer);					//  aggiorna la variabile count1 con il valore dei secondi trascorsi dall'inizio del programma
-	timer->sec = timer->count1 - timer->count2;			// aggiorna la variabile sec con i secondi effettivamente trascorsi dall'inizio della partita
-    timer->last_time += timer->vel;						// aggiorna la variabile last_time con il valore(espresso in secondi) da raggiungere per stampare una nuova schermata
+	timer->count1 = time(tmppointer);					//  update the count1 variable with the value of the seconds elapsed since the beginning of the program
+	timer->sec = timer->count1 - timer->count2;			// update the sec variable with the seconds actually passed since the start of the game
+    timer->last_time += timer->vel;						// updates the last_time variable with the value (expressed in seconds) to be reached to print a new screen
 }
 
 /******************************************************
-* funzione per il rilevamento dei caratteri freccia   *
-* in input.											  *
+* function for the input survey						  *
 ******************************************************/
 
 void arrow_controller(Command *command, Timer *timer)
@@ -458,14 +454,14 @@ void arrow_controller(Command *command, Timer *timer)
 
 	ch = _getch();
 
-	if(ch == ' ')								// se non si è premuta una freccia ma si è premuto ' ' metti il gioco in pausa
+	if(ch == ' ')								// if ' ' is pressed pause the game
 	{
 		pause(timer);
 	}
 
-	if(ch == ESC || ch == ' ')								// se il carattere premuto è una freccia allora il carattere ritornato dalla _getch() è 0xE0, o nel caso si era in pausa il carattere è ' '
+	if(ch == ESC || ch == ' ')								// if the key pressed is an arrow key, then the char returned by the _getch() is 0xE0, or in the case nwe were in pause is ' '
 	{
-		ch = _getch();										// prende il secondo carattere della sequenza di escape per verificare quale freccia è stata premuta
+		ch = _getch();										// take the second character of the escape sequence and verify wich arrow key has been pressed
 
 		switch(ch)
 		{
@@ -477,15 +473,13 @@ void arrow_controller(Command *command, Timer *timer)
 	}
 }
 
-/********************************************
-* funzione per il controllo dell'input      *
-* nel caso si provi a muoversi in direzione *
-* opposta a quella in cui si sta andando    *
-********************************************/
+/*********************************************************************************************************
+* function for controlling that the snake doesn't follw a direction oppsite to that wich hes going to    *
+*********************************************************************************************************/
 
 void input_controller(Command *command)
 {
-    if(command->cmd == 'a' && command->right == 1)           // previene il cambio di direzione in direzione opposta a quella in cui si sta andando
+    if(command->cmd == 'a' && command->right == 1)           // prevents the change of direction in the opposite direction to that in which you are going
     {
        command->cmd = 'd';
     }
@@ -513,54 +507,53 @@ void input_controller(Command *command)
     }
 }
 
-/*******************************************
-* funzione per la gestione del momento     *
-* in cui lo snake mangia la frutta bonus   *
-*******************************************/
+/*************************************************************************
+* function for handling the moment in wich the snake eat the bonus fruit   *
+*************************************************************************/
 
 void eat_bonus_fruit(Fruit *fruit, Snake *snake)
 {
-    fruit->bon = 0;              		// azzera il flag della presenza della frutta bonus
-    snake->score += 10;         			// incrementa di dieci i punti
-    (snake->len_snake)++;         		// incrementa la lunghezza dello snake
+    fruit->bon = 0;              				// update to zero the flag of the bonus fruit
+    snake->score += 10;         				// increase the score by ten
+    (snake->len_snake)++;         				// increase the length of the snake
 
-    snake = realloc(snake, sizeof(Snake) + ((snake->len_snake + 1) * sizeof(char *)));			// alloca spazio per una struttura Snake ed il suo vettore flessibile
-    snake->p[snake->len_snake] = NULL;															// inizializza l'ultimo elemento del vettore flessibile a NULL
+    snake = realloc(snake, sizeof(Snake) + ((snake->len_snake + 1) * sizeof(char *)));			// allocates the snake structure with the new adapted flexible array member length
+    snake->p[snake->len_snake] = NULL;															// initialize the last element of the flexible array member to NULL
 }
 
-/*******************************************
-* funzione per la gestione del momento     *
-* in cui lo snake mangia la frutta normale *
-*******************************************/
+
+/*************************************************************************
+* function for handling the moment in wich the snake eat the fruit   	 *
+*************************************************************************/
 
 void eat_fruit(Fruit *fruit, Snake *snake, char *campo)
 {
-    (fruit->bon_count)++;               				// azzera il flag della presenza della frutta bonus
-    snake->score++;        									// incrementa di dieci i punti
-    (snake->len_snake)++;         						// incrementa la lunghezza dello snake
+    (fruit->bon_count)++;               				
+    snake->score++;        									
+    (snake->len_snake)++;         						
 
     snake = realloc(snake, sizeof(Snake) + ((snake->len_snake + 1) * sizeof(char *)));
-    snake->p[snake->len_snake] = NULL;														// inizializza l'ultimo elemento del vettore flessibile a NULL
+    snake->p[snake->len_snake] = NULL;														
 
-    random_fruit(campo);             						// aggiunge un frutto in posizione random nello schermo
+    random_fruit(campo);             						// place a fruit in a random spot on the land
 
-    if(fruit->bon_count % 10 == 0 && fruit->bon == 0)      // se il contatore bonus è un multiplo di 10 e sul campo non c'è frutta bonus
+    if(fruit->bon_count % 10 == 0 && fruit->bon == 0)      // if the bonus counter is a ten multiple and there is no bonus fruit on the land
     {
-        random_bonus(campo);         				// aggiungi un frutto bonus in posizione random
-        fruit->bon = 1;						        // asserisci il flag della presenza del frutto bonus
+        random_bonus(campo);         				// place a bonus fruit in a random position on the land
+        fruit->bon = 1;						        // update to 1 the bonus fruit flag
     }
 }
 
-/***********************************************
-* funzione per la stampa a video della frutta  *
-***********************************************/
+/***************************************************
+* function for the handling of the fruit printing  *
+***************************************************/
 
 void random_fruit(char *campo)
 {
 	static int fruitpos;
 	static char *change;
 
-	while(1)                                /* finche non si trova una posizione libera per la frutta riprova ed infine riponila in campo[][] */
+	while(1)                                /* while we can't find  good position for the fruit retry to find a good position */
 	{
 	    change = campo;
 
@@ -576,18 +569,17 @@ void random_fruit(char *campo)
 }
 
 /************************************************
-* funzione per stampare a video la frutta bonus *
-* ogni 10 frutti normali mangiati.              *
+* function for print the fruit					*
 ************************************************/
 
 void random_bonus(char *campo)
 {
-	static int bonuspos;               /* variabile per contenere un valore random per la generazione della frutta bounus */
+	static int bonuspos;               /* static integer for the position fo the bonus fruit on the land */
     static char *change;
 
-	while(1)                          			// finche non trova un punto dello schermo di gioco
+	while(1)                          			
 	{
-	    change = campo;                          // dove si ha uno spazio bianco riprova un 'altro numero random
+	    change = campo;                          
 		bonuspos = rand() % 1400;
 		change += bonuspos;
 
@@ -599,37 +591,35 @@ void random_bonus(char *campo)
 	}
 }
 
-/***************************************
-* funzione per muovere lo snake di una *
-* posizione verso destra               *
-***************************************/
+/***************************************************************
+* function for moving the snake by one position to the right   *
+***************************************************************/
 
 void move_right(Snake *snake)
 {
     static char *change;
     static int i;
 
-    *(snake->p[0]) = SNAKE_PIXEL;            	  //  al posto della testa pone un carattere SNAKE_PIXEL
-    change = snake->p[0];                    	  //	 salva l'indirizzo della testa nella variabile change
-    snake->p[0]++;                           	  //	 aumenta di un'unità il puntatore alla testa
-    *(snake->p[0]) = SNAKE_HEAD;             	  //  pone nella nuova posizione della testa il carattere SNAKE_HEAD
+    *(snake->p[0]) = SNAKE_PIXEL;            	  //  instead of the head, place a SNAKE_PIXEL char
+    change = snake->p[0];                    	  //	 save the address of the head in the change variable
+    snake->p[0]++;                           	  //	 increase by a unit the address of the  head
+    *(snake->p[0]) = SNAKE_HEAD;             	  //  place in the new position of the head the SNAKE_HEAD char
 
-    if(snake->p[snake->len_snake] != NULL)       // se non si è mangiata la frutta p[snake->len_snake] != NULL
+    if(snake->p[snake->len_snake] != NULL)       // if a fruit isn't been eated p[snake->len_snake] != NULL
 	{
-		*(snake->p[snake->len_snake]) = ' ';	 // allora pone un carattere spazio al posto della coda
+		*(snake->p[snake->len_snake]) = ' ';	 // then place a space character in the old tail position
 	}
 
-    for(i = snake->len_snake; i > 1; i--)  		// dalla coda alla posizione prima del collo scambia l'indirizzo
-    {                               			// corrente nel ciclo con quello di un'unità inferiore nel vettore degli indirizzi dello snake
+    for(i = snake->len_snake; i > 1; i--)  		// from the tail to the position before the neck it exchanges the current address with that of the lower part in the address vector of the snake
+    {                               			
         snake->p[i] = snake->p[i - 1];
     }
-	snake->p[1] = change;						// infine pone l'indirizzo che possedeva precedentemente la testa nell'indirizzo attuale del collo
+	snake->p[1] = change;						// finally he places the address that the head previously possessed in the current address of the neck
 }
 
-/***************************************
-* funzione per muovere lo snake di una *
-* posizione verso sinistra             *
-***************************************/
+/***************************************************************
+* function for moving the snake by one position to the left    *
+***************************************************************/
 
 void move_left(Snake *snake)
 {
@@ -653,10 +643,9 @@ void move_left(Snake *snake)
     snake->p[1] = change;
 }
 
-/***************************************
-* funzione per muovere lo snake di una *
-* posizione verso l'alto               *
-***************************************/
+/***************************************************************
+* function for moving the snake by one position up			   *
+***************************************************************/
 
 void move_up(Snake *snake)
 {
@@ -680,10 +669,9 @@ void move_up(Snake *snake)
     snake->p[1] = change;
 }
 
-/***************************************
-* funzione per muovere lo snake di una *
-* posizione verso il basso             *
-***************************************/
+/***************************************************************
+* function for moving the snake by one position down		   *
+***************************************************************/
 
 void move_down(Snake *snake)
 {
@@ -709,27 +697,26 @@ void move_down(Snake *snake)
 }
 
 
-/*******************************************
-* funzione per lo spostamento del cursore  *
-* nella console.                           *
-*******************************************/
+/***************************************************************
+* function for moving the cursor							   *
+***************************************************************/
 
 void GoToXY(int colonna, int linea)
 {
-    static COORD coord;        // dichiarazione di una struttura di tipo COORD
-    coord.X = colonna;  	   // nella quale sono specificate le posizioni delle coordinate del cursore
+    static COORD coord;        // declaration of a COORD structure
+    coord.X = colonna;  	   // cursor coordinates
     coord.Y = linea;
 
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);   // salva nella variabile hConsole (di tipo void *) il valore ritornato dalla funzione(l'handle dello schermo) il cui parametro è di tipo long
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);   // save in the hConsole variable(type void *) the value returned by the function(the handle of the screen)
 
-    if (!SetConsoleCursorPosition(hConsole, coord))      // chiamata alla funzione che permette lo spostamento del cursore
+    if (!SetConsoleCursorPosition(hConsole, coord))      // function call that allowed the cursor movement
     {
-        ;												//se la funzione fallisce non fa nulla
+        ;												// if the function fail do nothing
     }
 }
 
 /***************************************************************
-* funzione per fare diventare il cursore invisibile	o visibile *
+* functino for maknig the cursor not visible				   *
 ***************************************************************/
 
 void ShowConsoleCursor(bool showFlag)
@@ -739,16 +726,15 @@ void ShowConsoleCursor(bool showFlag)
     CONSOLE_CURSOR_INFO cursorInfo;
 
     GetConsoleCursorInfo(out, &cursorInfo);
-    cursorInfo.bVisible = showFlag; // set the cursor visibility
+    cursorInfo.bVisible = showFlag; 			// set the cursor visibility
     SetConsoleCursorInfo(out, &cursorInfo);
 }
 
 
 
-/**********************************************
-* funzione per la gestione della schermata di *
-* fine gioco.                                 *
-**********************************************/
+/***************************************************************
+* function for handlig the end game screen					   *
+***************************************************************/
 
 void game_over(char campo[ALT][LARG],const char scritta2[ALT_SCRITTA][51])
 {
@@ -756,7 +742,7 @@ void game_over(char campo[ALT][LARG],const char scritta2[ALT_SCRITTA][51])
 
     static char linea[LARG] = 	{B_V, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', B_V, '\0'};
 
-    printf("\n\n\n\t%s\n", campo[0]);           /* stampa lo sfondo */
+    printf("\n\n\n\t%s\n", campo[0]);           /* print the background */
 
     for(i = 1; i < (ALT - 1); i++)
     {
@@ -766,35 +752,34 @@ void game_over(char campo[ALT][LARG],const char scritta2[ALT_SCRITTA][51])
     printf("\t%s\n\n", campo[ALT - 1]);
 
 
-    for(i = 0; i < ALT_SCRITTA; i++)                /* stampa la scritta */
+    for(i = 0; i < ALT_SCRITTA; i++)                /* print the writing */
     {
         GoToXY(18, i + 6);
         puts(scritta2[i]);
     }
 
-    i = getch();               /* aspetta un input */
+    i = getch();               /* wait the input */
 }
 
 
-/********************************************
-* funzione per la gestione della schermata  *
-* iniziale del gioco.                       *
-********************************************/
+/***************************************************************
+* function for handling the start screen 					   *
+***************************************************************/
 
 void intro(char campo[ALT][LARG], const char scritta[ALT_SCRITTA][25])
 {
-    static int i;      /* indice dei cicli */
+    static int i;      							/* index of cicle */
 
     static const char linea[LARG] = 	{B_V, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', B_V, '\0'};
 
-	printf("\n\n\n\t%s\n", campo[0]);			// stampa lo sfondo
+	printf("\n\n\n\t%s\n", campo[0]);			// print the background
 
     for(i = 1; i < (ALT - 1); i++)
     {
         printf("\t%s\n", linea);
     }
 
-    printf("\t%s\n\n", campo[ALT - 1]);			// stampa la scritta
+    printf("\t%s\n\n", campo[ALT - 1]);			// print the writing
 
     for(i = 0; i < ALT_SCRITTA; i++)
     {
@@ -814,34 +799,32 @@ void intro(char campo[ALT][LARG], const char scritta[ALT_SCRITTA][25])
 
     printf("PREMERE UN TASTO QUALSIASI PER CONTINUARE...");
 
-    i = getch();													// attende un input
+    i = getch();													// wait an input
 }
 
 /****************************************************
-* funzione per la stampa a video e l'aggiornamento  *
-* della classififca di gioco tenuta in memoria      *
-* secondaria sottoforma di file di testo.           *
+* function for handlig the ending screen            *
 ****************************************************/
 
 void podio(Snake *snake)
 {
-    FILE *fp;        /* puntatore al file testuale classifica */
+    FILE *fp;      										 	 /* pointer to the ranking file */
 
-    Classifica classifica = {.name_player = '\0'};      /* dichiarazione di una strutura classifica */
+    Classifica classifica = {.name_player = '\0'};      	/* declaration of a ranking structure */
 
-    fp = fopen(CLASSIFICA, "r+");       /* apre il file di testo classifica nella directory corrente in modalità di lettura-scrittura */
+    fp = fopen(CLASSIFICA, "r+");       					/* open the ranking file in read/write mode */
 
-    if(fp == NULL)                                          // se il file non esiste o non si può aprire stampa un messaggio di errore */
+    if(fp == NULL)                                          // if the file doesn't exist print an error message */
     {
         printf("errore: il file non si può aprire.\n");
 
     }
-    else                                                    // altrimenti aggiorna la classifica se necessario
+    else                                                    // otherwise update the rnaking file if necessary
     {
-        fscanf(fp, "%s\t%d\n%s\t%d\n%s\t%d\n", &classifica.name1, &classifica.score1, &classifica.name2, &classifica.score2, &classifica.name3, &classifica.score3);        /* legge i dati correnti della classifica */
+        fscanf(fp, "%s\t%d\n%s\t%d\n%s\t%d\n", &classifica.name1, &classifica.score1, &classifica.name2, &classifica.score2, &classifica.name3, &classifica.score3);        /* read th data of the current rank */
         fflush(fp);
 
-	    if(snake->score > classifica.score3 && snake->score < classifica.score2)      /* se il giocatore è arrivato terzo aggiorna e stampa la classifica */
+	    if(snake->score > classifica.score3 && snake->score < classifica.score2)      /* if the player reached the third position */
 	    {
 	        classifica.score3 = snake->score;
 	        fseek(fp, 0L, SEEK_SET);
@@ -851,7 +834,7 @@ void podio(Snake *snake)
 	    }
 	    else
 	    {
-	        if(snake->score > classifica.score2 && snake->score < classifica.score1)      /* se il giocatore è arrivato secondo aggiorna e stampa la classifica */
+	        if(snake->score > classifica.score2 && snake->score < classifica.score1)      /* if the player reach the second position */
 	        {
 	            classifica.score2 = snake->score;
 	            fseek(fp, 0L, SEEK_SET);
@@ -861,7 +844,7 @@ void podio(Snake *snake)
 	        }
 	        else
 	        {
-	            if(snake->score > classifica.score1)           /* se il giocatore è arrivato primo aggiorna e stampa la classifica */
+	            if(snake->score > classifica.score1)           								/* if the player reach the first position */
 	            {
 	                classifica.score1 = snake->score;
 	                fseek(fp, 0L, SEEK_SET);
@@ -875,8 +858,7 @@ void podio(Snake *snake)
 }
 
 /****************************************
-* funzione per la stampa a video della  *
-* classifica.                           *
+* function for rank printing            *
 ****************************************/
 
 void stampa_classifica(int position, Classifica *classifica)
@@ -885,7 +867,7 @@ void stampa_classifica(int position, Classifica *classifica)
 
     switch(position)
     {
-        case(1):                        /* stampa la classifica con l'inserimento del nome al primo posto */
+        case(1):                        /* print the rank with the new first position name */
         {
             GoToXY(34, 14);
             printf("        %d", classifica->score1);
@@ -904,7 +886,7 @@ void stampa_classifica(int position, Classifica *classifica)
             break;
         }
 
-        case(2):                       /* stampa la classifica con l'inserimento del nome al secondo posto */
+        case(2):                       /* print the rank with the new second position name */
         {
             GoToXY(34, 14);
             printf("%s     %d", classifica->name1, classifica->score1);
@@ -923,7 +905,7 @@ void stampa_classifica(int position, Classifica *classifica)
             break;
         }
 
-        case(3):                    /* stampa la classifica con l'inserimento del nome al terzo posto */
+        case(3):                    /* print the rank with the new third position name */
         {
             GoToXY(34, 14);
             printf("%s     %d", classifica->name1, classifica->score1);
