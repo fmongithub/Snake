@@ -27,7 +27,7 @@
 
 #define ALT_SCRITTA 5               /* writings height */
 
-#define CLASSIFICA "classifica.txt"     /* path for the ranking file */
+#define CLASSIFICA "rank.txt"     /* path for the ranking file */
 
 
 typedef struct           		/* structure within the name and scores of the first 3 ranking players */
@@ -268,7 +268,7 @@ int main(int argc, char *argv[])
                         }
                         else
                         {
-                            if(*(snake->p[0] - 1) == BONUS_FRUIT)						// se nella posizione in cui sta andando la testa c'è un carattere BONUS_FRUIT
+                            if(*(snake->p[0] - 1) == BONUS_FRUIT)						// se nella posizione in cui sta andando la testa c'Ã¨ un carattere BONUS_FRUIT
                             {															// refresh the direction flag, eat the bonus fruit and move the snake
                                 command.left = 1;
                                 eat_bonus_fruit(&fruit, snake);
